@@ -127,8 +127,8 @@ const App: Component = () => {
       <div class='flex flex-col items-center'>
         <Title>The Memory Module | Nekta</Title>
         <h2 class='text-2xl font-semibold'>The Memory Module</h2>
-        <div class='flex w-56 flex-col'>
-          <div class='my-2 w-full h-36 bg-slate-900 flex items-center justify-center relative select-none'>
+        <div class='flex flex-col items-center'>
+          <div class='my-2 w-72 h-36 bg-slate-900 rounded-lg flex items-center justify-center relative select-none'>
             <h3
               class={`text-xl text-red-600 absolute top-0 right-2 ${
                 strikes() === 2 && 'animate-blink'
@@ -152,7 +152,7 @@ const App: Component = () => {
               </h2>
             )}
             {!isFailed() && (
-              <div class='self-center grid grid-cols-5 justify-between gap-3 absolute bottom-2'>
+              <div class='self-center grid grid-cols-5 justify-between gap-5 absolute bottom-2'>
                 {Array(5)
                   .fill(1)
                   .map((_, index) => (
@@ -170,11 +170,11 @@ const App: Component = () => {
           <div class='w-fit grid grid-cols-4 gap-x-3'>
             {sequence().map((label, index) => (
               <button
-                class={`w-12 h-12 rounded font-bold text-2xl text-white bg-blue-500 ${
+                class={`w-12 h-12 rounded font-bold text-2xl text-white bg-blue-500 transition ease-in-out ${
                   isFailed() || isCompleted() || isLoading()
                     ? 'cursor-not-allowed'
                     : 'hover:bg-amber-300 hover:text-gray-900 hover:scale-110'
-                } transition ease-in-out`}
+                }`}
                 onclick={() => onClickLabel({ label, index })}
                 disabled={isFailed() || isCompleted() || isLoading()}
               >

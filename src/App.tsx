@@ -12,10 +12,12 @@ const App: Component = () => {
         <Route path='/' element={<Navigate href={'/memory'} />} />
         <Route path='/memory' component={Memory} />
       </Routes>
-      <small class='mb-2'>
-        © {new Date().getFullYear()} vyonizr | v
-        {import.meta.env.PACKAGE_VERSION}
-      </small>
+      <footer>
+        <small class='mb-2'>
+          © {new Date().getFullYear()} vyonizr | v
+          {import.meta.env.PACKAGE_VERSION}
+        </small>
+      </footer>
     </div>
   )
 }
