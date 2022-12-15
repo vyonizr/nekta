@@ -121,12 +121,13 @@ const App: Component = () => {
 
   return (
     <div class={styles.App}>
-      <h1 class='text-3xl font-bold'>
-        Stage: {stageDisplay()}/{rules().length}
-      </h1>
       <div class='flex w-56 flex-col'>
-        <div class='my-2 w-full h-32 bg-slate-900 flex items-center justify-center relative'>
-          <h3 class='text-2xl text-red-600 absolute top-0 right-2'>
+        <div class='my-2 w-full h-36 bg-slate-900 flex items-center justify-center relative'>
+          <h3
+            class={`text-2xl text-red-600 absolute top-0 right-2 ${
+              strikes() === 2 && 'animate-blink'
+            }`}
+          >
             {Array(3 - strikes())
               .fill(1)
               .map(() => (
@@ -134,13 +135,28 @@ const App: Component = () => {
               ))}
           </h3>
           <h2 class='cursor-default text-6xl text-green-500'>
-            {isFailed() ? 'N/A' : currentDisplayedNumber}
+            {isFailed() ? <>&#9760;</> : currentDisplayedNumber}
           </h2>
+          {!isFailed() && (
+            <div class='self-center grid grid-cols-5 justify-between gap-3 absolute bottom-2'>
+              {Array(5)
+                .fill(1)
+                .map((_, index) => (
+                  <div
+                    class={`${
+                      index <= stage()
+                        ? 'bg-green-500'
+                        : 'border-2 border-green-500'
+                    } w-4 h-4`}
+                  />
+                ))}
+            </div>
+          )}
         </div>
         <div class='w-fit grid grid-cols-4 gap-x-3'>
           {sequence().map((label, index) => (
             <button
-              class='w-12 h-12 rounded font-bold text-2xl text-white bg-blue-500 hover:bg-blue-600  border-stone-800'
+              class='w-12 h-12 rounded font-bold text-2xl text-white bg-blue-500 hover:bg-amber-300 hover:text-gray-900 transition ease-in-out hover:scale-110'
               onclick={() => onClickLabel({ label, index })}
               disabled={isFailed()}
             >
@@ -149,19 +165,18 @@ const App: Component = () => {
           ))}
         </div>
         {isFailed() && (
-          <button class='mt-2 w-full h-12 bg-gray-300 rounded border-stone-800'>
+          <button class='mt-2 w-full h-12 bg-gray-300 rounded'>
             Try Again
           </button>
         )}
       </div>
       {!isFailed() && (
         <>
-          <h1 class='text-3xl font-bold'>Instructions</h1>
-          <ol class='text-center'>
+          <ul class='list-disc list-outside'>
             {rules()[stage()].map((rule) => (
               <li>{rule.text}</li>
             ))}
-          </ol>
+          </ul>
         </>
       )}
       {/* {rules().map((stageRule, index) => (
