@@ -27,8 +27,10 @@ const App: Component = () => {
     createSignal<number>(randomIntFromInterval())
   const [stage, setStage] = createSignal(0)
   const [answers, setAnswers] = createSignal<IAnswer[]>([])
+  const [strikes, setStrikes] = createSignal<number>(0)
 
   const stageDisplay = createMemo(() => stage() + 1)
+  const isFailed = createMemo(() => strikes() === 3)
 
   const [sequence, setSequence] = createSignal<number[]>(createRandomSequence())
 
@@ -81,6 +83,7 @@ const App: Component = () => {
         setStage(0)
         setAnswers([])
       }
+      setStrikes((current) => current + 1)
     }
 
     setSequence(createRandomSequence())
@@ -118,18 +121,50 @@ const App: Component = () => {
 
   return (
     <div class={styles.App}>
-      <h1>Stage: {stageDisplay()}</h1>
-      <h2>{currentDisplayedNumber}</h2>
-      {sequence().map((label, index) => (
-        <button onclick={() => onClickLabel({ label, index })}>{label}</button>
-      ))}
-      <h1>Instructions</h1>
-      {/* <ol>
-        {rules()[stage()].map((rule) => (
-          <li>{rule.text}</li>
-        ))}
-      </ol> */}
-      {rules().map((stageRule, index) => (
+      <h1 class='text-3xl font-bold'>
+        Stage: {stageDisplay()}/{rules().length}
+      </h1>
+      <div class='flex w-56 flex-col'>
+        <div class='my-2 w-full h-32 bg-slate-900 flex items-center justify-center relative'>
+          <h3 class='text-2xl text-red-600 absolute top-0 right-2'>
+            {Array(3 - strikes())
+              .fill(1)
+              .map(() => (
+                <>&#10084;</>
+              ))}
+          </h3>
+          <h2 class='cursor-default text-6xl text-green-500'>
+            {isFailed() ? 'N/A' : currentDisplayedNumber}
+          </h2>
+        </div>
+        <div class='w-fit grid grid-cols-4 gap-x-3'>
+          {sequence().map((label, index) => (
+            <button
+              class='w-12 h-12 rounded font-bold text-2xl text-white bg-blue-500 hover:bg-blue-600  border-stone-800'
+              onclick={() => onClickLabel({ label, index })}
+              disabled={isFailed()}
+            >
+              {isFailed() ? <>&#128937;</> : label}
+            </button>
+          ))}
+        </div>
+        {isFailed() && (
+          <button class='mt-2 w-full h-12 bg-gray-300 rounded border-stone-800'>
+            Try Again
+          </button>
+        )}
+      </div>
+      {!isFailed() && (
+        <>
+          <h1 class='text-3xl font-bold'>Instructions</h1>
+          <ol class='text-center'>
+            {rules()[stage()].map((rule) => (
+              <li>{rule.text}</li>
+            ))}
+          </ol>
+        </>
+      )}
+      {/* {rules().map((stageRule, index) => (
         <div>
           <h2>Stage {displayPlusOne(index)}</h2>
           <ol>
@@ -138,7 +173,7 @@ const App: Component = () => {
             ))}
           </ol>
         </div>
-      ))}
+      ))} */}
     </div>
   )
 }
