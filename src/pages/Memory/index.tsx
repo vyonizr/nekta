@@ -32,13 +32,13 @@ const App: Component = () => {
       const stageRule: IRulesPayload[] = []
 
       for (let j = 0; j < 4; j++) {
-        const includePreviousStage = rules.length >= 1
+        const includePreviousStage = i >= 1
         const maxIndex = includePreviousStage ? 3 : 1
         const ruleModeIndex = randomIntFromInterval(0, maxIndex)
         const usedMode = RULE_MODES[ruleModeIndex]
         const yVal =
           ruleModeIndex > 1
-            ? randomIntFromInterval(0, rules.length - 1)
+            ? randomIntFromInterval(0, i - 1)
             : ruleModeIndex === 1
             ? randomIntFromInterval(0, 3)
             : randomIntFromInterval(1, 4)
@@ -198,13 +198,13 @@ const App: Component = () => {
           )}
         </div>
         {!(isFailed() || isCompleted() || isLoading()) && (
-          <div class={`mt-4 border-2 border-slate-900 bg-gray-100`}>
+          <section class={`mt-4 border-2 border-slate-900 bg-gray-100`}>
             <ul class='text-center divide-y divide-dashed divide-slate-900'>
               {rules()[stage()].map((rule) => (
                 <li class='p-2'>{rule.text}</li>
               ))}
             </ul>
-          </div>
+          </section>
         )}
         {/* {rules().map((stageRule, index) => (
         <div>
