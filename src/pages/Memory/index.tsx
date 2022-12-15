@@ -2,8 +2,7 @@ import { createSignal, createMemo } from 'solid-js'
 import type { Component } from 'solid-js'
 import { MetaProvider, Title } from '@solidjs/meta'
 
-import styles from './Memory.module.css'
-
+import { RULE_MODES } from './constants'
 import { IRulesPayload, IAnswer } from './types'
 import {
   displayPlusOne,
@@ -12,7 +11,6 @@ import {
   hintTextGenerator,
   createRandomSequence,
 } from './utils'
-import { RULE_MODES } from './constants'
 
 const App: Component = () => {
   const [currentDisplayedNumber, setCurrentDisplayedNumber] =
@@ -20,8 +18,10 @@ const App: Component = () => {
   const [stage, setStage] = createSignal(0)
   const [answers, setAnswers] = createSignal<IAnswer[]>([])
   const [strikes, setStrikes] = createSignal<number>(0)
+  const [isLoading, setIsLoading] = createSignal<boolean>(false)
 
   const isFailed = createMemo(() => strikes() === 3)
+  const isCompleted = createMemo(() => stage() === 5)
 
   const [sequence, setSequence] = createSignal<number[]>(createRandomSequence())
 
@@ -59,12 +59,13 @@ const App: Component = () => {
     return rules
   }
 
-  const [rules] = createSignal<IRulesPayload[][]>(generateRules())
+  const [rules, setRules] = createSignal<IRulesPayload[][]>(generateRules())
 
   function onClickLabel(answer: IAnswer) {
     const selectedHint = rules()[stage()][answer.index]
     const correctAnswer = generateCorrectAnswer()
     const isCorrect = selectedHint.validator(correctAnswer, answer)
+    setIsLoading(true)
 
     if (isCorrect) {
       setAnswers((current) => [...current, answer])
@@ -79,6 +80,8 @@ const App: Component = () => {
 
     setSequence(createRandomSequence())
     setCurrentDisplayedNumber(randomIntFromInterval(1, 4))
+
+    setTimeout(() => setIsLoading(false), 100)
   }
 
   function generateCorrectAnswer(): IAnswer {
@@ -110,15 +113,24 @@ const App: Component = () => {
     }
   }
 
+  function restartGame() {
+    setStage(0)
+    setStrikes(0)
+    setSequence(createRandomSequence())
+    setAnswers([])
+    setCurrentDisplayedNumber(randomIntFromInterval())
+    setRules(generateRules())
+  }
+
   return (
     <MetaProvider>
-      <Title>The Memory Module | Nekta</Title>
-      <div class={styles.App}>
+      <div class='flex flex-col items-center'>
+        <Title>The Memory Module | Nekta</Title>
         <h2 class='text-2xl font-semibold'>The Memory Module</h2>
         <div class='flex w-56 flex-col'>
-          <div class='my-2 w-full h-36 bg-slate-900 flex items-center justify-center relative'>
+          <div class='my-2 w-full h-36 bg-slate-900 flex items-center justify-center relative select-none'>
             <h3
-              class={`text-2xl text-red-600 absolute top-0 right-2 ${
+              class={`text-xl text-red-600 absolute top-0 right-2 ${
                 strikes() === 2 && 'animate-blink'
               }`}
             >
@@ -128,9 +140,17 @@ const App: Component = () => {
                   <>&#10084;</>
                 ))}
             </h3>
-            <h2 class='font-mono cursor-default text-6xl text-green-500'>
-              {isFailed() ? <>&#9760;</> : currentDisplayedNumber}
-            </h2>
+            {isFailed() ? (
+              <h2 class='cursor-default text-5xl text-green-500'>&#9760;</h2>
+            ) : isCompleted() ? (
+              <h2 class='font-mono cursor-default text-5xl text-green-500'>
+                &#129395;
+              </h2>
+            ) : (
+              <h2 class='font-mono cursor-default text-7xl text-green-500'>
+                {!isLoading() && currentDisplayedNumber()}
+              </h2>
+            )}
             {!isFailed() && (
               <div class='self-center grid grid-cols-5 justify-between gap-3 absolute bottom-2'>
                 {Array(5)
@@ -138,10 +158,10 @@ const App: Component = () => {
                   .map((_, index) => (
                     <div
                       class={`${
-                        index <= stage()
-                          ? 'bg-green-500'
-                          : 'border-2 border-green-500'
-                      } w-4 h-4`}
+                        index < stage() && 'bg-green-500'
+                      } border-2 border-green-500 w-4 h-4 transition ease-linear ${
+                        index === stage() && 'animate-blink'
+                      }`}
                     />
                   ))}
               </div>
@@ -151,31 +171,40 @@ const App: Component = () => {
             {sequence().map((label, index) => (
               <button
                 class={`w-12 h-12 rounded font-bold text-2xl text-white bg-blue-500 ${
-                  isFailed()
+                  isFailed() || isCompleted() || isLoading()
                     ? 'cursor-not-allowed'
                     : 'hover:bg-amber-300 hover:text-gray-900 hover:scale-110'
                 } transition ease-in-out`}
                 onclick={() => onClickLabel({ label, index })}
-                disabled={isFailed()}
+                disabled={isFailed() || isCompleted() || isLoading()}
               >
-                {isFailed() ? <>&#128937;</> : label}
+                {isFailed() || isCompleted() ? (
+                  <>&#128937;</>
+                ) : isLoading() ? (
+                  <>&plus;</>
+                ) : (
+                  label
+                )}
               </button>
             ))}
           </div>
-          {isFailed() && (
-            <button class='mt-2 w-full h-12 bg-gray-300 rounded'>
-              Try Again
+          {(isFailed() || isCompleted()) && (
+            <button
+              onClick={restartGame}
+              class='mt-2 w-full h-12 bg-gray-200 rounded hover:bg-gray-300'
+            >
+              {isFailed() ? 'Try Again' : 'Start Over'}
             </button>
           )}
         </div>
-        {!isFailed() && (
-          <>
-            <ul class='list-disc list-outside'>
+        {!(isFailed() || isCompleted() || isLoading()) && (
+          <div class={`mt-4 border-2 border-slate-900 bg-gray-100`}>
+            <ul class='text-center divide-y divide-dashed divide-slate-900'>
               {rules()[stage()].map((rule) => (
-                <li>{rule.text}</li>
+                <li class='p-2'>{rule.text}</li>
               ))}
             </ul>
-          </>
+          </div>
         )}
         {/* {rules().map((stageRule, index) => (
         <div>
@@ -187,7 +216,6 @@ const App: Component = () => {
           </ol>
         </div>
       ))} */}
-        <small>v{import.meta.env.PACKAGE_VERSION}</small>
       </div>
     </MetaProvider>
   )

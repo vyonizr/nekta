@@ -1,18 +1,22 @@
-import { lazy } from 'solid-js'
+import { Component, lazy } from 'solid-js'
 import { Routes, Route, Navigate } from '@solidjs/router'
-import type { Component } from 'solid-js'
-const Memory = lazy(() => import('./pages/Memory'))
-const Home = lazy(() => import('./pages/Home'))
 
-import styles from './App.module.css'
+const Memory = lazy(() => import('./pages/Memory'))
+// const Home = lazy(() => import('./pages/Home'))
 
 const App: Component = () => {
   return (
-    <Routes>
-      {/* <Route path='/' component={Home} /> */}
-      <Route path='/' element={<Navigate href={'/memory'} />} />
-      <Route path='/memory' component={Memory} />
-    </Routes>
+    <div class='flex flex-col items-center justify-between min-h-screen w-10/12'>
+      <Routes>
+        {/* <Route path='/' component={Home} /> */}
+        <Route path='/' element={<Navigate href={'/memory'} />} />
+        <Route path='/memory' component={Memory} />
+      </Routes>
+      <small class='mb-2'>
+        © {new Date().getFullYear()} vyonizr | v
+        {import.meta.env.PACKAGE_VERSION}
+      </small>
+    </div>
   )
 }
 
