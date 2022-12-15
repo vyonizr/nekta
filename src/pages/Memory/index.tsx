@@ -206,16 +206,6 @@ const App: Component = () => {
             </ul>
           </section>
         )}
-        {/* {rules().map((stageRule, index) => (
-        <div>
-          <h2>Stage {displayPlusOne(index)}</h2>
-          <ol>
-            {stageRule.map((rule) => (
-              <li>{rule.text}</li>
-            ))}
-          </ol>
-        </div>
-      ))} */}
       </div>
     </MetaProvider>
   )
