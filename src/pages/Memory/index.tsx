@@ -181,16 +181,18 @@ const App: Component = () => {
           <div class='w-fit grid grid-cols-4 gap-x-3'>
             {sequence().map((label, index) => (
               <button
-                class={`w-12 h-12 rounded font-bold text-2xl text-white bg-blue-500 transition ease-in-out ${
+                class={`w-12 h-12 rounded font-bold text-2xl transition ease-in-out text-white ${
                   isFailed() || isCompleted() || isLoading()
                     ? 'cursor-not-allowed'
                     : 'hover:bg-amber-300 hover:text-gray-900 hover:scale-110'
+                } ${
+                  isFailed() || isCompleted() ? 'bg-blue-300' : 'bg-blue-500'
                 }`}
                 onclick={() => onClickLabel({ label, index })}
                 disabled={isFailed() || isCompleted() || isLoading()}
               >
                 {isFailed() || isCompleted() ? (
-                  <>&#128937;</>
+                  <>&#215;</>
                 ) : isLoading() ? (
                   <>&plus;</>
                 ) : (
