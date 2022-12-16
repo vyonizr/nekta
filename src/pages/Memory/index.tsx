@@ -32,9 +32,10 @@ const App: Component = () => {
       const stageRule: IRulesPayload[] = []
 
       for (let j = 0; j < 4; j++) {
-        const includePreviousStage = i >= 1
-        const maxIndex = includePreviousStage ? 3 : 1
-        const ruleModeIndex = randomIntFromInterval(0, maxIndex)
+        const isPreviousStageAppear = Math.random() < 1 * (i / 4)
+        const ruleModeIndex = isPreviousStageAppear
+          ? randomIntFromInterval(2, 3)
+          : randomIntFromInterval(0, 1)
         const usedMode = RULE_MODES[ruleModeIndex]
         const yVal =
           ruleModeIndex > 1
