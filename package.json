@@ -1,6 +1,6 @@
 {
   "name": "nekta",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A minigame inspired by \"Keep Talking and Nobody Explodes\"",
   "scripts": {
     "start": "vite",
