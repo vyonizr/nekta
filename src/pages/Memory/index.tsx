@@ -1,4 +1,4 @@
-import { createSignal, createMemo, createEffect, onCleanup } from 'solid-js'
+import { createSignal, createMemo } from 'solid-js'
 import type { Component } from 'solid-js'
 import { MetaProvider, Title } from '@solidjs/meta'
 
