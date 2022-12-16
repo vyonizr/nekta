@@ -19,11 +19,21 @@ const App: Component = () => {
   const [answers, setAnswers] = createSignal<IAnswer[]>([])
   const [strikes, setStrikes] = createSignal<number>(0)
   const [isLoading, setIsLoading] = createSignal<boolean>(false)
+  // const [countDown, setCountdown] = createSignal<number>(10)
 
   const isFailed = createMemo(() => strikes() === 3)
   const isCompleted = createMemo(() => stage() === 5)
 
   const [sequence, setSequence] = createSignal<number[]>(createRandomSequence())
+
+  // createEffect(() => {
+  //   if (countDown() > 0) {
+  //     const interval = setInterval(() => {
+  //       setCountdown((currentTime) => currentTime - 1)
+  //     }, 1000)
+  //     onCleanup(() => clearInterval(interval))
+  //   }
+  // })
 
   function generateRules() {
     const rules: IRulesPayload[][] = []
@@ -32,9 +42,10 @@ const App: Component = () => {
       const stageRule: IRulesPayload[] = []
 
       for (let j = 0; j < 4; j++) {
-        const includePreviousStage = i >= 1
-        const maxIndex = includePreviousStage ? 3 : 1
-        const ruleModeIndex = randomIntFromInterval(0, maxIndex)
+        const isPreviousStageAppear = Math.random() < 1 * (i / 4)
+        const ruleModeIndex = isPreviousStageAppear
+          ? randomIntFromInterval(2, 3)
+          : randomIntFromInterval(0, 1)
         const usedMode = RULE_MODES[ruleModeIndex]
         const yVal =
           ruleModeIndex > 1
@@ -62,9 +73,9 @@ const App: Component = () => {
   const [rules, setRules] = createSignal<IRulesPayload[][]>(generateRules())
 
   function onClickLabel(answer: IAnswer) {
-    const selectedHint = rules()[stage()][answer.index]
+    const instructionTruth = rules()[stage()][currentDisplayedNumber() - 1]
     const correctAnswer = generateCorrectAnswer()
-    const isCorrect = selectedHint.validator(correctAnswer, answer)
+    const isCorrect = instructionTruth.validator(correctAnswer, answer)
     setIsLoading(true)
 
     if (isCorrect) {
@@ -86,6 +97,7 @@ const App: Component = () => {
 
   function generateCorrectAnswer(): IAnswer {
     const instruction = rules()[stage()][currentDisplayedNumber() - 1]
+    console.log(instruction, '<== INSTRUCTION')
 
     switch (instruction.mode) {
       case 'label-stage-y':
