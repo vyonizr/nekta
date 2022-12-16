@@ -97,7 +97,6 @@ const App: Component = () => {
 
   function generateCorrectAnswer(): IAnswer {
     const instruction = rules()[stage()][currentDisplayedNumber() - 1]
-    console.log(instruction, '<== INSTRUCTION')
 
     switch (instruction.mode) {
       case 'label-stage-y':
