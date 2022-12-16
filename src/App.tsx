@@ -1,7 +1,9 @@
 import { Component, lazy } from 'solid-js'
 import { Routes, Route, Navigate } from '@solidjs/router'
 
-const Memory = lazy(() => import('./pages/Memory'))
+import Memory from "./pages/Memory"
+
+// const Memory = lazy(() => import('./pages/Memory'))
 // const Home = lazy(() => import('./pages/Home'))
 
 const App: Component = () => {
