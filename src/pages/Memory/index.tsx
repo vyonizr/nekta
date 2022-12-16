@@ -1,4 +1,4 @@
-import { createSignal, createMemo } from 'solid-js'
+import { createSignal, createMemo, createEffect, onCleanup } from 'solid-js'
 import type { Component } from 'solid-js'
 import { MetaProvider, Title } from '@solidjs/meta'
 
@@ -19,11 +19,21 @@ const App: Component = () => {
   const [answers, setAnswers] = createSignal<IAnswer[]>([])
   const [strikes, setStrikes] = createSignal<number>(0)
   const [isLoading, setIsLoading] = createSignal<boolean>(false)
+  // const [countDown, setCountdown] = createSignal<number>(10)
 
   const isFailed = createMemo(() => strikes() === 3)
   const isCompleted = createMemo(() => stage() === 5)
 
   const [sequence, setSequence] = createSignal<number[]>(createRandomSequence())
+
+  // createEffect(() => {
+  //   if (countDown() > 0) {
+  //     const interval = setInterval(() => {
+  //       setCountdown((currentTime) => currentTime - 1)
+  //     }, 1000)
+  //     onCleanup(() => clearInterval(interval))
+  //   }
+  // })
 
   function generateRules() {
     const rules: IRulesPayload[][] = []
@@ -63,9 +73,9 @@ const App: Component = () => {
   const [rules, setRules] = createSignal<IRulesPayload[][]>(generateRules())
 
   function onClickLabel(answer: IAnswer) {
-    const selectedHint = rules()[stage()][answer.index]
+    const instructionTruth = rules()[stage()][currentDisplayedNumber() - 1]
     const correctAnswer = generateCorrectAnswer()
-    const isCorrect = selectedHint.validator(correctAnswer, answer)
+    const isCorrect = instructionTruth.validator(correctAnswer, answer)
     setIsLoading(true)
 
     if (isCorrect) {
@@ -87,6 +97,7 @@ const App: Component = () => {
 
   function generateCorrectAnswer(): IAnswer {
     const instruction = rules()[stage()][currentDisplayedNumber() - 1]
+    console.log(instruction, '<== INSTRUCTION')
 
     switch (instruction.mode) {
       case 'label-stage-y':
