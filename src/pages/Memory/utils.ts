@@ -1,6 +1,7 @@
 import ordinal from 'ordinal'
 
-import { TRuleMode, TValidatorFn, IAnswer } from './types'
+import { TRuleMode, TValidatorFn, IAnswer, IRulesPayload } from './types'
+import { RULE_MODES } from './constants'
 
 export function displayPlusOne(number: number) {
   return number + 1
@@ -81,4 +82,39 @@ export function createRandomSequence() {
   }
 
   return sequence
+}
+
+export function generateRules() {
+  const rules: IRulesPayload[][] = []
+
+  for (let i = 0; i < 5; i++) {
+    const stageRule: IRulesPayload[] = []
+
+    for (let j = 0; j < 4; j++) {
+      const isPreviousStageAppear = Math.random() < 1 * (i / 4)
+      const ruleModeIndex = isPreviousStageAppear
+        ? randomIntFromInterval(2, 3)
+        : randomIntFromInterval(0, 1)
+      const usedMode = RULE_MODES[ruleModeIndex]
+      const yVal =
+        ruleModeIndex > 1
+          ? randomIntFromInterval(0, i - 1)
+          : ruleModeIndex === 1
+          ? randomIntFromInterval(0, 3)
+          : randomIntFromInterval(1, 4)
+
+      stageRule.push({
+        text: `If the display is ${displayPlusOne(
+          j
+        )}, press the button ${hintTextGenerator(usedMode, yVal)}`,
+        validator: findValidator(usedMode),
+        mode: usedMode,
+        yVal,
+      })
+    }
+
+    rules.push(stageRule)
+  }
+
+  return rules
 }
