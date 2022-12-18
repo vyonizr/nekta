@@ -8,4 +8,6 @@ export const RULE_MODES: TRuleMode[] = [
 ]
 
 export const SECONDS_ADDED = 3
-export const DEFAULT_COUNTDOWN_START = 5
+export const MID_GAME_COUNTDOWN_START = 5
+export const INITIAL_COUNTDOWN_START = 8
+

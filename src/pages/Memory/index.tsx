@@ -2,7 +2,11 @@ import { createSignal, createMemo } from 'solid-js'
 import type { Component } from 'solid-js'
 import { MetaProvider, Title } from '@solidjs/meta'
 
-import { SECONDS_ADDED, DEFAULT_COUNTDOWN_START } from './constants'
+import {
+  SECONDS_ADDED,
+  MID_GAME_COUNTDOWN_START,
+  INITIAL_COUNTDOWN_START,
+} from './constants'
 import { IRulesPayload, IAnswer } from './types'
 import {
   randomIntFromInterval,
@@ -19,7 +23,7 @@ const App: Component = () => {
   const [isLoading, setIsLoading] = createSignal<boolean>(false)
   const [rules, setRules] = createSignal<IRulesPayload[][]>(generateRules())
   const [countDown, setCountdown] = createSignal<number>(
-    DEFAULT_COUNTDOWN_START
+    INITIAL_COUNTDOWN_START
   )
   const [sequence, setSequence] = createSignal<number[]>(createRandomSequence())
   const [isGameStarted, setIsGameStarted] = createSignal<boolean>(false)
@@ -68,7 +72,7 @@ const App: Component = () => {
       }
 
       setStrikes((current) => current + 1)
-      setCountdown(5)
+      setCountdown(MID_GAME_COUNTDOWN_START)
     }
 
     setSequence(createRandomSequence())
@@ -109,7 +113,7 @@ const App: Component = () => {
     clearInterval(triggerTimer)
     setStage(0)
     setStrikes(0)
-    setCountdown(DEFAULT_COUNTDOWN_START)
+    setCountdown(INITIAL_COUNTDOWN_START)
     setSequence(createRandomSequence())
     setAnswers([])
     setCurrentDisplayedNumber(randomIntFromInterval())
